@@ -6,6 +6,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
+import { User } from '@prisma/client';
 
 import { PrismaService } from '../prisma/prisma.service';
 import { RegisterDto } from './dto/register.dto';
@@ -94,12 +95,7 @@ export class AuthService {
 
   // ─── Helpers privados ────────────────────────────────────────────────────────
 
-  private async generateTokens(user: {
-    id: string;
-    email: string;
-    name: string;
-    role: import('@prisma/client').Role;
-  }): Promise<AuthResponse> {
+  private async generateTokens(user: User): Promise<AuthResponse> {
     const payload: JwtPayload = {
       sub: user.id,
       email: user.email,
@@ -116,9 +112,8 @@ export class AuthService {
       expiresIn: refreshExpiresIn,
     });
 
-    // Guarda la sesión con fecha de expiración
     const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 7); // 7 días por defecto
+    expiresAt.setDate(expiresAt.getDate() + 7);
 
     await this.prisma.session.create({
       data: {
@@ -133,7 +128,7 @@ export class AuthService {
       email: user.email,
       name: user.name,
       role: user.role,
-      createdAt: new Date().toISOString(),
+      createdAt: user.createdAt.toISOString(),
     };
 
     return { accessToken, refreshToken, user: userDto };

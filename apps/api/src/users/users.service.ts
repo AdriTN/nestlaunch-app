@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { User } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserDto } from '@nestlaunch/shared';
@@ -9,13 +10,7 @@ export class UsersService {
 
   // ─── Mapeo ──────────────────────────────────────────────────────────────────
 
-  private toDto(user: {
-    id: string;
-    email: string;
-    name: string;
-    role: import('@prisma/client').Role;
-    createdAt: Date;
-  }): UserDto {
+  private toDto(user: User): UserDto {
     return {
       id: user.id,
       email: user.email,
@@ -32,7 +27,7 @@ export class UsersService {
       where: { deletedAt: null },
       orderBy: { createdAt: 'desc' },
     });
-    return users.map((u) => this.toDto(u));
+    return users.map((u: User) => this.toDto(u));
   }
 
   async findOne(id: string): Promise<UserDto> {
