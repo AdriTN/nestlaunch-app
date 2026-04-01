@@ -33,14 +33,22 @@ nestlaunch/
 
 ## Setup rápido
 
+> **Windows:** usa `cmd` (Símbolo del sistema), no PowerShell. pnpm y git funcionan mejor desde cmd.
+
 ### 1. Prerrequisitos
 
 - Node.js 20+
-- pnpm 9+
+- pnpm 9+ — instalar con: `npm install -g pnpm`
 - Docker Desktop
 
 ### 2. Variables de entorno
 
+**Windows (cmd):**
+```cmd
+copy .env.example .env
+```
+
+**Linux / macOS:**
 ```bash
 cp .env.example .env
 ```
@@ -51,13 +59,18 @@ Edita `.env` y cambia al menos:
 
 ### 3. Instalar dependencias
 
-```bash
+```cmd
 pnpm install
 ```
 
+> Si obtienes un error de versión pnpm, ejecuta primero:
+> ```cmd
+> pnpm self-update
+> ```
+
 ### 4. Levantar con Docker (recomendado)
 
-```bash
+```cmd
 docker-compose up -d
 ```
 
@@ -67,13 +80,18 @@ Esto arranca PostgreSQL, la API y el Web simultáneamente.
 
 Primero necesitas PostgreSQL corriendo. Luego:
 
-```bash
-# Aplicar migraciones de Prisma
-cd apps/api
+```cmd
+rem Aplicar migraciones de Prisma (desde apps/api)
+cd apps\api
 pnpm prisma migrate dev --name init
-cd ../..
+cd ..\..
 
-# Levantar todo en paralelo
+rem Generar el cliente Prisma (solo primera vez)
+cd apps\api
+pnpm prisma generate
+cd ..\..
+
+rem Levantar todo en paralelo
 pnpm dev
 ```
 
@@ -124,19 +142,19 @@ Base URL: `http://localhost:3001/api`
 
 ## Comandos útiles
 
-```bash
-# Desarrollo
+```cmd
+rem Desarrollo
 pnpm dev                    # Levanta API + Web en paralelo
 
-# Build
+rem Build
 pnpm build                  # Compila todo
 
-# Prisma (desde apps/api)
+rem Prisma (ejecutar desde apps\api)
 pnpm prisma migrate dev     # Nueva migración
 pnpm prisma studio          # GUI de la base de datos
 pnpm prisma generate        # Regenerar cliente
 
-# Docker
+rem Docker
 docker-compose up -d        # Levantar servicios
 docker-compose down         # Detener servicios
 docker-compose logs -f api  # Ver logs de la API
